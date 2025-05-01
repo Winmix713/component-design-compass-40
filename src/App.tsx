@@ -14,6 +14,7 @@ import DesignTokens from "./pages/DesignTokens";
 import PatternLibrary from "./pages/PatternLibrary";
 import Integrations from "./pages/Integrations";
 import Changelog from "./pages/Changelog";
+import ButtonDocPage from "./pages/ButtonDocPage";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,14 @@ const App = () => (
                 element={
                   <Layout>
                     <ComponentDetail />
+                  </Layout>
+                } 
+              />
+              <Route 
+                path="/docs/button" 
+                element={
+                  <Layout>
+                    <ButtonDocPage />
                   </Layout>
                 } 
               />

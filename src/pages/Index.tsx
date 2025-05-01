@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/context/AdminContext';
 import { cn } from '@/lib/utils';
@@ -88,7 +88,7 @@ const Index = () => {
         />
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6 justify-center">
+      <div className="flex flex-col md:flex-row gap-6 justify-center mb-16">
         <Button
           size="lg"
           className="gap-2"
@@ -105,6 +105,69 @@ const Index = () => {
         >
           Design Tokens
         </Button>
+
+        <Button
+          variant="secondary"
+          size="lg"
+          className="gap-2"
+          onClick={() => navigate('/docs/button')}
+        >
+          <BookOpen size={16} />
+          Documentation
+        </Button>
+      </div>
+
+      {/* Documentation Section */}
+      <div className="mb-16">
+        <h2 className={cn(
+          "text-2xl font-bold mb-6 text-center",
+          isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+        )}>Component Documentation</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <DocCard
+            title="Button"
+            description="Standard button component with various styles and states"
+            path="/docs/button"
+            isAdminMode={isAdminMode}
+          />
+          
+          <DocCard
+            title="Input"
+            description="Form input components for collecting user data"
+            path="/docs/input"
+            isAdminMode={isAdminMode}
+          />
+          
+          <DocCard
+            title="Modal"
+            description="Dialog windows for displaying important information"
+            path="/docs/modal"
+            isAdminMode={isAdminMode}
+          />
+          
+          <DocCard
+            title="Card"
+            description="Container component for grouping related content"
+            path="/docs/card"
+            isAdminMode={isAdminMode}
+          />
+          
+          <DocCard
+            title="Table"
+            description="Data tables for displaying structured information"
+            path="/docs/table"
+            isAdminMode={isAdminMode}
+          />
+          
+          <DocCard
+            title="View All"
+            description="Browse the complete documentation library"
+            path="/docs"
+            isAdminMode={isAdminMode}
+            variant="dashed"
+          />
+        </div>
       </div>
 
       <div className="mt-20">
@@ -227,6 +290,52 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, icon, isA
         "text-muted-foreground",
         isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
       )}>{description}</p>
+    </div>
+  );
+};
+
+interface DocCardProps {
+  title: string;
+  description: string;
+  path: string;
+  isAdminMode?: boolean;
+  variant?: 'default' | 'dashed';
+}
+
+const DocCard: React.FC<DocCardProps> = ({ 
+  title, 
+  description, 
+  path, 
+  isAdminMode,
+  variant = 'default' 
+}) => {
+  const navigate = useNavigate();
+  
+  return (
+    <div 
+      className={cn(
+        "p-5 border rounded-lg cursor-pointer transition-all hover:shadow-md",
+        variant === 'dashed' ? "border-dashed border-primary/40" : "bg-card",
+        isAdminMode && "outline-dashed outline-1 outline-primary/40"
+      )}
+      onClick={() => navigate(path)}
+    >
+      <h3 className={cn(
+        "font-semibold text-lg mb-2 flex items-center",
+        isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+      )}>
+        {title}
+        {variant === 'dashed' && <ArrowRight size={16} className="ml-2" />}
+      </h3>
+      <p className={cn(
+        "text-muted-foreground text-sm",
+        isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+      )}>{description}</p>
+      {variant !== 'dashed' && (
+        <Button variant="link" className="mt-3 p-0 h-auto" onClick={() => navigate(path)}>
+          View Documentation
+        </Button>
+      )}
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Search, ChevronDown, ChevronRight } from "lucide-react";
+import { Search, ChevronDown, ChevronRight, BookOpen } from "lucide-react";
 import { componentCategories } from '@/lib/componentData';
 import { useAdmin } from '@/context/AdminContext';
 
@@ -22,6 +22,14 @@ const sections: SidebarSection[] = [
   { title: 'Integrations', path: '/integrations' },
 ];
 
+const docSections = [
+  { name: "Button", id: "button" },
+  { name: "Input", id: "input" },
+  { name: "Modal", id: "modal" },
+  { name: "Card", id: "card" },
+  { name: "Table", id: "table" },
+];
+
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,6 +37,7 @@ const Sidebar = () => {
   const [expandedCategories, setExpandedCategories] = useState<string[]>(
     componentCategories.map(cat => cat.name)
   );
+  const [expandedDocs, setExpandedDocs] = useState(true);
   const { isAdminMode, setAdminMode } = useAdmin();
 
   const toggleCategory = (category: string) => {
@@ -39,12 +48,20 @@ const Sidebar = () => {
     }
   };
 
+  const toggleDocs = () => {
+    setExpandedDocs(!expandedDocs);
+  };
+
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
   const isComponentActive = (componentId: string) => {
     return location.pathname === `/components/${componentId}`;
+  };
+
+  const isDocActive = (docId: string) => {
+    return location.pathname === `/docs/${docId}`;
   };
 
   // Filter components based on search query
@@ -57,6 +74,13 @@ const Sidebar = () => {
           comp.description.toLowerCase().includes(searchQuery.toLowerCase())
         )
       })).filter(category => category.components.length > 0);
+
+  // Filter doc sections based on search query
+  const filteredDocs = searchQuery.trim() === ''
+    ? docSections
+    : docSections.filter(doc => 
+        doc.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
 
   return (
     <div className="w-64 h-screen border-r flex flex-col bg-sidebar">
@@ -87,6 +111,42 @@ const Sidebar = () => {
               {section.title}
             </Button>
           ))}
+          
+          {/* Documentation Section */}
+          <div className="mt-6 space-y-1">
+            <Button
+              variant="ghost"
+              className="w-full justify-between text-sm h-9 px-3 font-medium"
+              onClick={toggleDocs}
+            >
+              <div className="flex items-center">
+                <BookOpen className="h-4 w-4 mr-2" />
+                <span>Documentation</span>
+              </div>
+              {expandedDocs ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
+            
+            {expandedDocs && filteredDocs.length > 0 && (
+              <div className="ml-4 space-y-1 mt-1">
+                {filteredDocs.map((doc) => (
+                  <Button
+                    key={doc.id}
+                    variant={isDocActive(doc.id) ? "secondary" : "ghost"}
+                    className={`w-full justify-start text-sm h-8 px-3 ${
+                      isDocActive(doc.id) ? "font-medium" : "font-normal"
+                    } flex items-center`}
+                    onClick={() => navigate(`/docs/${doc.id}`)}
+                  >
+                    <span>{doc.name}</span>
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
           
           {/* Component Categories */}
           <div className="mt-6 space-y-1">
