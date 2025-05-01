@@ -1,10 +1,24 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { ThemeMode, ThemeColors } from './store.types';
-import { colorTokens } from '@/lib/componentData';
+
+// Theme types
+export type ThemeMode = 'light' | 'dark' | 'system';
+
+export type ColorToken = {
+  name: string;
+  value: string;
+};
+
+export interface ThemeColors {
+  blue: ColorToken[];
+  gray: ColorToken[];
+  red: ColorToken[];
+  green: ColorToken[];
+}
 
 interface ThemeContextType {
   theme: ThemeMode;
   setTheme: (theme: ThemeMode) => void;
+  toggleTheme: () => void;
   colors: ThemeColors;
   updateColors: (newColors: Partial<ThemeColors>) => void;
   radius: string;
@@ -65,6 +79,7 @@ const initialColors: ThemeColors = {
 const ThemeContext = createContext<ThemeContextType>({
   theme: 'system',
   setTheme: () => {},
+  toggleTheme: () => {},
   colors: initialColors,
   updateColors: () => {},
   radius: '0.5rem',
@@ -79,7 +94,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     // Check for saved theme in localStorage
     const savedTheme = localStorage.getItem('theme') as ThemeMode;
-    if (savedTheme) {
+    if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
       setTheme(savedTheme);
     } else {
       // Use system preference as default
@@ -103,6 +118,17 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setRadius(savedRadius);
     }
   }, []);
+
+  // Toggle between light and dark themes
+  const toggleTheme = () => {
+    setTheme(prevTheme => {
+      if (prevTheme === 'light') return 'dark';
+      if (prevTheme === 'dark') return 'light';
+      // If system, use the opposite of the current system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return prefersDark ? 'light' : 'dark';
+    });
+  };
 
   useEffect(() => {
     // Apply theme to document
@@ -152,7 +178,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <ThemeContext.Provider 
       value={{ 
         theme, 
-        setTheme, 
+        setTheme,
+        toggleTheme,
         colors, 
         updateColors, 
         radius, 
@@ -166,4 +193,5 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
 export const useThemeContext = () => useContext(ThemeContext);
 
+// Export the context as default
 export default ThemeContext;
