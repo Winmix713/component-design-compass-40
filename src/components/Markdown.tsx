@@ -1,14 +1,10 @@
 import React from 'react';
-import { useTheme } from 'next-themes';
 
 interface MarkdownProps {
   content: string;
 }
 
 export const Markdown: React.FC<MarkdownProps> = ({ content }) => {
-  const { theme } = useTheme();
-  const isDarkMode = theme === 'dark';
-
   // Simple markdown renderer that uses dangerouslySetInnerHTML
   // but with basic sanitization
   const renderMarkdown = (text: string): string => {
@@ -111,14 +107,9 @@ export const Markdown: React.FC<MarkdownProps> = ({ content }) => {
       .replace(/src=/gi, 'data-src=');
   };
 
-  // Apply the theme-based CSS classes
-  const themeClasses = isDarkMode 
-    ? 'bg-background text-foreground' 
-    : 'bg-white text-slate-900';
-
   return (
     <div 
-      className={`markdown-content ${themeClasses} prose prose-sm max-w-none`}
+      className="markdown-content bg-background text-foreground prose prose-sm max-w-none"
       dangerouslySetInnerHTML={{ 
         __html: sanitizeHTML(renderMarkdown(content)) 
       }}
