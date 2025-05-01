@@ -4,6 +4,7 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import { useAdmin } from '@/context/AdminContext';
 import { cn } from '@/lib/utils';
+import AdminPanel from './admin/AdminPanel';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -24,6 +25,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {children}
         </main>
       </div>
+      <AdminPanel />
     </div>
   );
 };

@@ -1,20 +1,54 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAdmin } from '@/context/AdminContext';
+import { cn } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
 
 const Index = () => {
   const navigate = useNavigate();
+  const { isAdminMode, setIsEditing } = useAdmin();
+
+  // Enable editing mode when in admin mode
+  const handleEnableEditing = () => {
+    setIsEditing(true);
+  };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className={cn(
+      "max-w-5xl mx-auto p-6",
+      isAdminMode && "relative"
+    )}>
+      {isAdminMode && (
+        <Card className="mb-6 p-4 border-primary/50 bg-background/80 backdrop-blur flex justify-between items-center">
+          <div>
+            <h3 className="text-sm font-medium">Admin Mode Active</h3>
+            <p className="text-xs text-muted-foreground">You can now edit components and customize the theme.</p>
+          </div>
+          <Button size="sm" onClick={handleEnableEditing}>
+            Enable Editing
+          </Button>
+        </Card>
+      )}
+
       <div className="text-center mb-16">
         <div className="inline-flex items-center gap-2 mb-6">
-          <h1 className="text-4xl font-bold">UI Components</h1>
+          <h1 className={cn(
+            "text-4xl font-bold",
+            isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+          )}>UI Components</h1>
           <span className="text-2xl text-muted-foreground">/</span>
-          <h1 className="text-3xl font-bold text-muted-foreground">UI Komponensek</h1>
+          <h1 className={cn(
+            "text-3xl font-bold text-muted-foreground",
+            isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+          )}>UI Komponensek</h1>
         </div>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <p className={cn(
+          "text-xl text-muted-foreground max-w-2xl mx-auto",
+          isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+        )}>
           A comprehensive library of UI components and design system to help you build beautiful, accessible, and consistent user interfaces.
         </p>
       </div>
@@ -28,6 +62,7 @@ const Index = () => {
               <span className="text-blue-600 text-xl">⚛️</span>
             </div>
           }
+          isAdminMode={isAdminMode}
         />
         
         <FeatureCard
@@ -38,6 +73,7 @@ const Index = () => {
               <span className="text-green-600 text-xl">🎨</span>
             </div>
           }
+          isAdminMode={isAdminMode}
         />
         
         <FeatureCard
@@ -48,6 +84,7 @@ const Index = () => {
               <span className="text-purple-600 text-xl">🧩</span>
             </div>
           }
+          isAdminMode={isAdminMode}
         />
       </div>
 
@@ -71,12 +108,21 @@ const Index = () => {
       </div>
 
       <div className="mt-20">
-        <h2 className="text-2xl font-bold mb-6">Getting Started</h2>
+        <h2 className={cn(
+          "text-2xl font-bold mb-6",
+          isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+        )}>Getting Started</h2>
         
         <div className="space-y-10">
           <section>
-            <h3 className="text-xl font-semibold mb-3">Installation</h3>
-            <p className="text-muted-foreground mb-4">
+            <h3 className={cn(
+              "text-xl font-semibold mb-3",
+              isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+            )}>Installation</h3>
+            <p className={cn(
+              "text-muted-foreground mb-4",
+              isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+            )}>
               Install the component library in your React project using your preferred package manager.
             </p>
             <div className="bg-muted p-4 rounded-md">
@@ -85,8 +131,14 @@ const Index = () => {
           </section>
           
           <section>
-            <h3 className="text-xl font-semibold mb-3">Usage</h3>
-            <p className="text-muted-foreground mb-4">
+            <h3 className={cn(
+              "text-xl font-semibold mb-3",
+              isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+            )}>Usage</h3>
+            <p className={cn(
+              "text-muted-foreground mb-4",
+              isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+            )}>
               Import components directly from the package and use them in your application.
             </p>
             <div className="bg-muted p-4 rounded-md">
@@ -105,8 +157,14 @@ function App() {
           </section>
           
           <section>
-            <h3 className="text-xl font-semibold mb-3">Theming</h3>
-            <p className="text-muted-foreground mb-4">
+            <h3 className={cn(
+              "text-xl font-semibold mb-3",
+              isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+            )}>Theming</h3>
+            <p className={cn(
+              "text-muted-foreground mb-4",
+              isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+            )}>
               The component library supports theming through design tokens. You can customize the appearance to match your brand.
             </p>
             <div className="bg-muted p-4 rounded-md">
@@ -149,16 +207,26 @@ interface FeatureCardProps {
   title: string;
   description: string;
   icon: React.ReactNode;
+  isAdminMode?: boolean;
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, icon }) => {
+const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, icon, isAdminMode }) => {
   return (
-    <div className="p-6 border rounded-lg bg-card">
+    <div className={cn(
+      "p-6 border rounded-lg bg-card",
+      isAdminMode && "outline-dashed outline-1 outline-primary/40"
+    )}>
       <div className="mb-4">
         {icon}
       </div>
-      <h3 className="font-semibold text-lg mb-2">{title}</h3>
-      <p className="text-muted-foreground">{description}</p>
+      <h3 className={cn(
+        "font-semibold text-lg mb-2",
+        isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+      )}>{title}</h3>
+      <p className={cn(
+        "text-muted-foreground",
+        isAdminMode && "outline-dashed outline-1 outline-primary/40 p-1 rounded"
+      )}>{description}</p>
     </div>
   );
 };
