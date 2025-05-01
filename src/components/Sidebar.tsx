@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Search, ChevronDown, ChevronRight } from "lucide-react";
 import { componentCategories } from '@/lib/componentData';
+import { useAdmin } from '@/context/AdminContext';
 
 type SidebarSection = {
   title: string;
@@ -27,6 +29,7 @@ const Sidebar = () => {
   const [expandedCategories, setExpandedCategories] = useState<string[]>(
     componentCategories.map(cat => cat.name)
   );
+  const { isAdminMode, setAdminMode } = useAdmin();
 
   const toggleCategory = (category: string) => {
     if (expandedCategories.includes(category)) {
@@ -43,6 +46,17 @@ const Sidebar = () => {
   const isComponentActive = (componentId: string) => {
     return location.pathname === `/components/${componentId}`;
   };
+
+  // Filter components based on search query
+  const filteredCategories = searchQuery.trim() === '' 
+    ? componentCategories 
+    : componentCategories.map(category => ({
+        ...category,
+        components: category.components.filter(comp => 
+          comp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          comp.description.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      })).filter(category => category.components.length > 0);
 
   return (
     <div className="w-64 h-screen border-r flex flex-col bg-sidebar">
@@ -76,7 +90,7 @@ const Sidebar = () => {
           
           {/* Component Categories */}
           <div className="mt-6 space-y-1">
-            {componentCategories.map((category) => (
+            {filteredCategories.map((category) => (
               <div key={category.name}>
                 <Button
                   variant="ghost"
@@ -122,8 +136,12 @@ const Sidebar = () => {
         <span>Version 2.1.4</span>
         <div className="flex items-center">
           <span>Admin Mode</span>
-          <div className="ml-2 w-8 h-4 bg-muted rounded-full relative">
-            <div className="absolute left-0.5 top-0.5 w-3 h-3 bg-background rounded-full"></div>
+          <div className="ml-2">
+            <Switch
+              checked={isAdminMode}
+              onCheckedChange={setAdminMode}
+              aria-label="Toggle admin mode"
+            />
           </div>
         </div>
       </div>

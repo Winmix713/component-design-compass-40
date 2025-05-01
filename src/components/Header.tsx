@@ -1,16 +1,23 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { MoonIcon, SunIcon, Settings, User } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
+import { useAdmin } from '@/context/AdminContext';
+import { cn } from '@/lib/utils';
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { theme, setTheme } = useTheme();
+  const { isAdminMode } = useAdmin();
   
   return (
-    <header className="h-16 border-b flex items-center justify-between px-4 bg-background">
+    <header className={cn(
+      "h-16 border-b flex items-center justify-between px-4 bg-background",
+      isAdminMode && "border-primary/20"
+    )}>
       <div className="flex items-center gap-4">
         <div 
           className="font-bold text-lg cursor-pointer flex items-center gap-2" 
@@ -39,6 +46,11 @@ const Header = () => {
         </div>
       </div>
       <div className="flex items-center gap-2">
+        {isAdminMode && (
+          <div className="mr-2 px-3 py-1 bg-primary-600 text-white text-xs rounded-full">
+            Admin Mode
+          </div>
+        )}
         <Button
           variant="ghost"
           size="icon"

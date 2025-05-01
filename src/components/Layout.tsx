@@ -2,14 +2,21 @@
 import React from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import { useAdmin } from '@/context/AdminContext';
+import { cn } from '@/lib/utils';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { isAdminMode } = useAdmin();
+  
   return (
-    <div className="flex h-screen">
+    <div className={cn(
+      "flex h-screen", 
+      isAdminMode && "bg-background/90 border border-primary/10"
+    )}>
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
