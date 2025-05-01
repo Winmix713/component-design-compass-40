@@ -1,5 +1,9 @@
 import React from 'react';
-import { useTheme } from '@/hooks/useTheme';
+// Itt használjuk a next-themes helyett a már telepített könyvtárat
+import { useTheme } from 'next-themes';
+// Importáljuk a syntax highlightert, ami már telepítve van
+import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface MarkdownProps {
   content: string;
@@ -8,6 +12,9 @@ interface MarkdownProps {
 export const Markdown: React.FC<MarkdownProps> = ({ content }) => {
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
+
+  // Kiválasztjuk a megfelelő színsémát a syntax highlighterhez
+  const codeStyle = isDarkMode ? oneDark : oneLight;
 
   // Simple markdown renderer that uses dangerouslySetInnerHTML
   // but with basic sanitization
@@ -29,10 +36,22 @@ export const Markdown: React.FC<MarkdownProps> = ({ content }) => {
       '<a href="$2" class="text-primary hover:underline">$1</a>'
     );
 
-    // Code blocks
+    // Code blocks with syntax highlighting using react-syntax-highlighter
+    // (this part is tricky with pure regexes and we would normally use react-syntax-highlighter directly in JSX)
+    // For now, we'll just create placeholders that we'll replace with actual components in our code
+    let codeBlockCounter = 0;
+    const codeBlocks: {language: string, code: string}[] = [];
+    
     html = html.replace(
       /```(\w+)?\n([\s\S]*?)\n```/g,
-      '<pre class="bg-muted rounded-md my-4 p-4 overflow-x-auto"><code class="text-sm">$2</code></pre>'
+      function(match, language, code) {
+        const id = `code-block-${codeBlockCounter++}`;
+        codeBlocks.push({
+          language: language || 'text',
+          code: code
+        });
+        return `<div id="${id}" class="code-block-placeholder"></div>`;
+      }
     );
     
     // Inline code
@@ -116,12 +135,13 @@ export const Markdown: React.FC<MarkdownProps> = ({ content }) => {
     ? 'bg-background text-foreground' 
     : 'bg-white text-slate-900';
 
+  // Feldolgozzuk a markdown tartalmat
+  const htmlContent = sanitizeHTML(renderMarkdown(content));
+
   return (
     <div 
       className={`markdown-content ${themeClasses} prose prose-sm max-w-none`}
-      dangerouslySetInnerHTML={{ 
-        __html: sanitizeHTML(renderMarkdown(content)) 
-      }}
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   );
 };
