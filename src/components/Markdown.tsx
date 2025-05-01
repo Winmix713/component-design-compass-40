@@ -1,8 +1,4 @@
-
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useTheme } from '@/hooks/useTheme';
 
 interface MarkdownProps {
@@ -13,58 +9,168 @@ export const Markdown: React.FC<MarkdownProps> = ({ content }) => {
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
 
+  // Function to parse markdown to HTML
+  const parseMarkdown = (text: string): string => {
+    // Heading parsing
+    let parsedText = text
+      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+      .replace(/^# (.*$)/gm, '<h1>$1</h1>');
+
+    // Bold and italic
+    parsedText = parsedText
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+    // Links
+    parsedText = parsedText.replace(
+      /\[([^\[]+)\]\(([^\)]+)\)/g,
+      '<a href="$2">$1</a>'
+    );
+
+    // Lists
+    parsedText = parsedText.replace(
+      /^\s*\n\* (.*)/gm, 
+      '<ul>\n<li>$1</li>'
+    );
+    parsedText = parsedText.replace(/^\* (.*)/gm, '<li>$1</li>');
+    parsedText = parsedText.replace(/\n$/g, '</ul>');
+
+    // Code blocks
+    parsedText = parsedText.replace(
+      /```(\w+)?\n([\s\S]*?)\n```/g, 
+      '<pre><code class="language-$1">$2</code></pre>'
+    );
+    
+    // Inline code
+    parsedText = parsedText.replace(/`(.*?)`/g, '<code>$1</code>');
+
+    // Paragraphs
+    parsedText = parsedText.replace(/^\s*(\n)?(.+)/gm, function(m) {
+      return /\<(\/)?(h\d|ul|ol|li|blockquote|pre|img)/.test(m) ? m : '<p>' + m + '</p>';
+    });
+
+    // Line breaks
+    parsedText = parsedText.replace(/\n/g, '<br />');
+
+    return parsedText;
+  };
+
+  // Sanitize input (basic implementation)
+  const sanitizeHTML = (html: string): string => {
+    return html
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/on\w+="[^"]*"/g, '')
+      .replace(/javascript:/g, '');
+  };
+
+  const htmlContent = sanitizeHTML(parseMarkdown(content));
+
   return (
-    <ReactMarkdown
-      components={{
-        h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-6 mb-4" {...props} />,
-        h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-5 mb-3" {...props} />,
-        h3: ({ node, ...props }) => <h3 className="text-lg font-bold mt-4 mb-2" {...props} />,
-        h4: ({ node, ...props }) => <h4 className="text-base font-bold mt-3 mb-1" {...props} />,
-        p: ({ node, ...props }) => <p className="mb-4 text-muted-foreground" {...props} />,
-        ul: ({ node, ...props }) => <ul className="mb-4 ml-6 list-disc" {...props} />,
-        ol: ({ node, ...props }) => <ol className="mb-4 ml-6 list-decimal" {...props} />,
-        li: ({ node, ...props }) => <li className="mb-1" {...props} />,
-        a: ({ node, ...props }) => (
-          <a className="text-primary hover:underline" {...props} />
-        ),
-        blockquote: ({ node, ...props }) => (
-          <blockquote className="border-l-4 border-muted pl-4 italic my-4" {...props} />
-        ),
-        code: ({ node, inline, className, children, ...props }) => {
-          const match = /language-(\w+)/.exec(className || '');
-          return !inline && match ? (
-            <SyntaxHighlighter
-              style={vscDarkPlus}
-              language={match[1]}
-              PreTag="div"
-              className="rounded-md my-4"
-              {...props}
-            >
-              {String(children).replace(/\n$/, '')}
-            </SyntaxHighlighter>
-          ) : (
-            <code
-              className="bg-muted px-1.5 py-0.5 rounded text-sm"
-              {...props}
-            >
-              {children}
-            </code>
-          );
-        },
-        table: ({ node, ...props }) => (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse my-4" {...props} />
-          </div>
-        ),
-        thead: ({ node, ...props }) => <thead className="bg-muted" {...props} />,
-        th: ({ node, ...props }) => (
-          <th className="p-2 text-left border-b font-medium" {...props} />
-        ),
-        td: ({ node, ...props }) => <td className="p-2 border-b" {...props} />,
-        hr: ({ node, ...props }) => <hr className="my-6 border-muted" {...props} />,
-      }}
-    >
-      {content}
-    </ReactMarkdown>
+    <div 
+      className={`markdown-content ${isDarkMode ? 'dark' : 'light'}`}
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+      style={{
+        '--bg-color': isDarkMode ? '#1e1e2e' : '#ffffff',
+        '--text-color': isDarkMode ? '#cdd6f4' : '#323232',
+        '--muted-color': isDarkMode ? '#a6adc8' : '#6c757d',
+        '--border-color': isDarkMode ? '#45475a' : '#dee2e6',
+        '--code-bg': isDarkMode ? '#181825' : '#f8f9fa',
+      } as React.CSSProperties}
+    />
   );
 };
+
+// Add CSS for the markdown component
+export const MarkdownStyles = `
+  .markdown-content {
+    color: var(--text-color);
+    line-height: 1.6;
+  }
+  
+  .markdown-content h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .markdown-content h2 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .markdown-content h3 {
+    font-size: 1.125rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .markdown-content p {
+    margin-bottom: 1rem;
+    color: var(--muted-color);
+  }
+  
+  .markdown-content ul, .markdown-content ol {
+    margin-bottom: 1rem;
+    margin-left: 1.5rem;
+  }
+  
+  .markdown-content ul {
+    list-style-type: disc;
+  }
+  
+  .markdown-content ol {
+    list-style-type: decimal;
+  }
+  
+  .markdown-content li {
+    margin-bottom: 0.25rem;
+  }
+  
+  .markdown-content a {
+    color: #3182ce;
+    text-decoration: none;
+  }
+  
+  .markdown-content a:hover {
+    text-decoration: underline;
+  }
+  
+  .markdown-content blockquote {
+    border-left: 4px solid var(--border-color);
+    padding-left: 1rem;
+    font-style: italic;
+    margin: 1rem 0;
+  }
+  
+  .markdown-content code {
+    background-color: var(--code-bg);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+  }
+  
+  .markdown-content pre {
+    background-color: var(--code-bg);
+    padding: 1rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+  
+  .markdown-content pre code {
+    background-color: transparent;
+    padding: 0;
+    font-size: 0.875rem;
+  }
+  
+  .markdown-content hr {
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 1.5rem 0;
+  }
+`;
