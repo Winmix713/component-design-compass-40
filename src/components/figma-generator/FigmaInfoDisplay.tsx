@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, Calendar, Layers, Palette, Component, Image, Type, Square, Circle, XIcon as LucideIcon, Code2, Package, Rocket } from 'lucide-react';
+import { FileText, Calendar, Layers, Palette, Component, Image, Type, Square, Circle, Code2, Package, Rocket } from 'lucide-react';
 import { CodeGenerationPanel } from './CodeGenerationPanel';
 import { DesignSystemPanel } from './DesignSystemPanel';
 import { EnterpriseGeneratorPanel } from './EnterpriseGeneratorPanel';
@@ -27,7 +27,9 @@ const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleString('hu-HU');
 };
 
-const ICON_MAP: Record<string, LucideIcon> = {
+type IconComponent = typeof FileText;
+
+const ICON_MAP: Record<string, IconComponent> = {
   TEXT: Type,
   RECTANGLE: Square,
   ELLIPSE: Circle,
@@ -37,7 +39,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   DEFAULT: Square,
 };
 
-const getNodeTypeIcon = (type: string): LucideIcon => {
+const getNodeTypeIcon = (type: string): IconComponent => {
   return ICON_MAP[type] || ICON_MAP.DEFAULT;
 };
 

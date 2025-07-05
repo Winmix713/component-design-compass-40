@@ -50,7 +50,7 @@ export const ${componentName} = ({ ${props.map(p => p.name).join(', ')} }) => {`
     }
 
     // Vue and HTML implementations would go here
-    return jsx;
+    return '';
   }
 
   private generateCSS(node: FigmaNode, styling: string): string {

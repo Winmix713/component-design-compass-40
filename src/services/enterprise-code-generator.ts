@@ -117,7 +117,7 @@ export class EnterpriseCodeGenerator {
   async generateEnterprise(figmaData: FigmaApiResponse): Promise<GenerationResult> {
     console.log('🚀 Starting Enterprise Code Generation Pipeline...');
     
-    const startTime = performance.now();
+    const startTime = Date.now();
 
     // Phase 1: Analysis and Planning
     const analysisResult = await this.optimizer.measurePerformance(

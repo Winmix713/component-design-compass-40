@@ -113,7 +113,7 @@ export default ${componentName};`;
       return this.generateHTML(node, className, styles, children);
     }
 
-    return jsx;
+    return '';
   }
 
   private generateJSXElement(node: FigmaNode, className: string, styles: string, children: string, depth: number): string {

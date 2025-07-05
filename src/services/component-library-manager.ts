@@ -253,7 +253,7 @@ ${this.generateStorybookVariants(variants)}
       metadata: {
         ...component.metadata,
         componentType: 'layout',
-        isBaseComponent: true
+        // isBaseComponent: true
       }
     };
   }
@@ -292,7 +292,7 @@ ${this.generateStorybookVariants(variants)}
       css: this.updateCSSToExtendBase(component.css, baseComponent.name),
       metadata: {
         ...component.metadata,
-        extendsComponent: baseComponent.name
+        // extendsComponent: baseComponent.name
       }
     };
   }

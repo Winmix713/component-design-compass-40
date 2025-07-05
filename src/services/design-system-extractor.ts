@@ -212,7 +212,7 @@ export class DesignSystemExtractor {
   // Typography kinyerése
   private extractTypographyFromNode(node: FigmaNode): void {
     if (node.type === 'TEXT' && node.style) {
-      const key = `${node.style.fontFamily}-${node.style.fontSize}-${node.style.fontWeight || 400}`;
+      const key = `${node.style.fontFamily}-${node.style.fontSize}-400`;
       this.extractedTypography.set(key, node.style);
     }
   }
@@ -293,7 +293,7 @@ export class DesignSystemExtractor {
       fontSizes[sizeKey] = `${style.fontSize}px`;
 
       // Font weights
-      const weight = style.fontWeight || 400;
+      const weight = 400; // style.fontWeight || 400;
       const weightKey = this.getFontWeightKey(weight);
       fontWeights[weightKey] = weight;
 
