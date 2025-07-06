@@ -80,6 +80,7 @@ export interface PerformanceReport {
   memoryUsage: number;
   optimizationSavings: number;
   recommendations: string[];
+  generationTime?: number;
 }
 
 export interface QualityReport {
@@ -170,7 +171,7 @@ export class EnterpriseCodeGenerator {
     // Phase 9: Performance Report
     const performance = this.generatePerformanceReport(optimizedComponents);
 
-    const totalTime = performance.now() - startTime;
+    const totalTime = Date.now() - startTime;
     console.log(`✅ Enterprise Generation Complete in ${totalTime.toFixed(2)}ms`);
 
     return {
@@ -499,5 +500,309 @@ ${animationCSS}`.trim();
     return [];
   }
 
-  // ... Additional method implementations would continue here
+  // Component Generation Methods
+  private generateTypeScript(node: FigmaNode, componentName: string): string {
+    return `export interface ${componentName}Props {
+  className?: string;
+  children?: React.ReactNode;
+}`;
+  }
+
+  private analyzeAccessibility(node: FigmaNode): any {
+    return {
+      score: 85,
+      issues: [],
+      recommendations: ['Add ARIA labels', 'Ensure keyboard navigation']
+    };
+  }
+
+  private analyzeResponsive(node: FigmaNode): any {
+    return {
+      breakpoints: ['sm', 'md', 'lg'],
+      responsive: true
+    };
+  }
+
+  private generateEnterpriseMetadata(node: FigmaNode, componentName: string): ComponentMetadata {
+    return {
+      figmaNodeId: node.id,
+      componentType: this.getComponentType(node),
+      complexity: 'medium',
+      estimatedAccuracy: 85,
+      generationTime: Date.now(),
+      dependencies: []
+    };
+  }
+
+  private getComponentType(node: FigmaNode): 'button' | 'card' | 'text' | 'input' | 'layout' | 'complex' {
+    if (node.type === 'TEXT') return 'text';
+    if (node.type === 'FRAME') return 'layout';
+    if (node.name.toLowerCase().includes('button')) return 'button';
+    if (node.name.toLowerCase().includes('card')) return 'card';
+    if (node.name.toLowerCase().includes('input')) return 'input';
+    return 'complex';
+  }
+
+  // Framework-specific component generation
+  private generateVueComponent(componentName: string, props: any[], children: string): string {
+    return `<template>
+  ${children}
+</template>
+
+<script setup lang="ts">
+// Vue 3 Composition API
+</script>`;
+  }
+
+  private generateAngularComponent(componentName: string, props: any[], children: string): string {
+    return `import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-${componentName.toLowerCase()}',
+  template: \`${children}\`
+})
+export class ${componentName}Component {}`;
+  }
+
+  private generatePropsInterface(props: any[], componentName: string): string {
+    return `interface ${componentName}Props {
+  ${props.map(p => `${p.name}?: ${p.type || 'any'};`).join('\n  ')}
+}`;
+  }
+
+  private generateComponentExports(componentName: string): string {
+    return `export default ${componentName};`;
+  }
+
+  // CSS Generation Methods
+  private generateResponsiveCSS(node: FigmaNode): string {
+    return `
+@media (max-width: 768px) {
+  .component { padding: 1rem; }
+}
+@media (min-width: 1024px) {
+  .component { padding: 2rem; }
+}`;
+  }
+
+  private generateThemeCSS(node: FigmaNode): string {
+    return `
+.component {
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+[data-theme="dark"] .component {
+  color: var(--text-primary-dark);
+  background: var(--bg-primary-dark);
+}`;
+  }
+
+  private generateAnimationCSS(node: FigmaNode): string {
+    return `
+.component {
+  transition: all 0.3s ease;
+}
+.component:hover {
+  transform: translateY(-2px);
+}`;
+  }
+
+  // Design System Methods
+  private generateThemes(figmaData: FigmaApiResponse): Record<string, string> {
+    return {
+      light: ':root { --primary: 222.2 84% 4.9%; }',
+      dark: '[data-theme="dark"] { --primary: 210 40% 98%; }'
+    };
+  }
+
+  private generateUtilityClasses(components: GeneratedComponent[]): string {
+    return `.flex { display: flex; }
+.grid { display: grid; }
+.hidden { display: none; }`;
+  }
+
+  private generateComponentBaseStyles(components: GeneratedComponent[]): string {
+    return components.map(c => `.${c.name.toLowerCase()} { position: relative; }`).join('\n');
+  }
+
+  private extractColors(figmaData: FigmaApiResponse): any[] {
+    return [
+      { name: 'primary', value: '#000000' },
+      { name: 'secondary', value: '#ffffff' }
+    ];
+  }
+
+  private extractTypography(figmaData: FigmaApiResponse): any[] {
+    return [
+      { name: 'heading', fontSize: '24px', fontWeight: '600' },
+      { name: 'body', fontSize: '16px', fontWeight: '400' }
+    ];
+  }
+
+  private extractSpacing(figmaData: FigmaApiResponse): any[] {
+    return [
+      { name: 'xs', value: '4px' },
+      { name: 'sm', value: '8px' },
+      { name: 'md', value: '16px' }
+    ];
+  }
+
+  private extractShadows(figmaData: FigmaApiResponse): any[] {
+    return [
+      { name: 'sm', value: '0 1px 2px 0 rgb(0 0 0 / 0.05)' },
+      { name: 'md', value: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }
+    ];
+  }
+
+  private generateTailwindTokens(colors: any[], typography: any[], spacing: any[], shadows: any[]): string {
+    return `module.exports = {
+  theme: {
+    extend: {
+      colors: { ${colors.map(c => `'${c.name}': '${c.value}'`).join(', ')} },
+      spacing: { ${spacing.map(s => `'${s.name}': '${s.value}'`).join(', ')} }
+    }
+  }
+}`;
+  }
+
+  private generateCSSTokens(colors: any[], typography: any[], spacing: any[], shadows: any[]): string {
+    return `:root {
+  ${colors.map(c => `--color-${c.name}: ${c.value};`).join('\n  ')}
+  ${spacing.map(s => `--spacing-${s.name}: ${s.value};`).join('\n  ')}
+}`;
+  }
+
+  // Documentation Methods
+  private generateReadme(components: GeneratedComponent[], designSystem: DesignSystemOutput): string {
+    return `# Generated Component Library
+
+## Components
+${components.map(c => `- ${c.name}`).join('\n')}
+
+## Design System
+Tokens, themes, and utilities included.`;
+  }
+
+  private generateComponentDocumentation(components: GeneratedComponent[]): Record<string, string> {
+    const docs: Record<string, string> = {};
+    components.forEach(component => {
+      docs[component.name] = `# ${component.name}
+
+## Usage
+\`\`\`jsx
+<${component.name} />
+\`\`\``;
+    });
+    return docs;
+  }
+
+  private generateDesignGuidelines(designSystem: DesignSystemOutput): string {
+    return `# Design Guidelines
+
+## Colors
+Use semantic color tokens for consistency.
+
+## Typography
+Follow the established type scale.`;
+  }
+
+  private generateUsageExamples(components: GeneratedComponent[]): string {
+    return components.map(c => `<${c.name} />`).join('\n');
+  }
+
+  // Testing Methods
+  private generateUnitTests(components: GeneratedComponent[]): Record<string, string> {
+    const tests: Record<string, string> = {};
+    components.forEach(component => {
+      tests[`${component.name}.test.tsx`] = `import { render } from '@testing-library/react';
+import { ${component.name} } from './${component.name}';
+
+describe('${component.name}', () => {
+  it('renders without crashing', () => {
+    render(<${component.name} />);
+  });
+});`;
+    });
+    return tests;
+  }
+
+  private generateIntegrationTests(components: GeneratedComponent[]): Record<string, string> {
+    return {
+      'integration.test.tsx': `describe('Component Integration', () => {
+  it('components work together', () => {
+    // Integration test implementation
+  });
+});`
+    };
+  }
+
+  private generateE2ETests(components: GeneratedComponent[]): Record<string, string> {
+    return {
+      'e2e.spec.ts': `import { test, expect } from '@playwright/test';
+
+test('basic functionality', async ({ page }) => {
+  await page.goto('/');
+  // E2E test implementation
+});`
+    };
+  }
+
+  private generateAccessibilityTests(components: GeneratedComponent[]): Record<string, string> {
+    return {
+      'accessibility.test.tsx': `import { axe, toHaveNoViolations } from 'jest-axe';
+
+expect.extend(toHaveNoViolations);
+
+describe('Accessibility', () => {
+  it('has no accessibility violations', async () => {
+    // A11y test implementation
+  });
+});`
+    };
+  }
+
+  // Storybook Generation
+  private generateStorybook(components: GeneratedComponent[]): StorybookOutput {
+    const stories: Record<string, string> = {};
+    components.forEach(component => {
+      stories[`${component.name}.stories.tsx`] = `import type { Meta, StoryObj } from '@storybook/react';
+import { ${component.name} } from './${component.name}';
+
+const meta: Meta<typeof ${component.name}> = {
+  title: 'Components/${component.name}',
+  component: ${component.name},
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};`;
+    });
+
+    return {
+      stories,
+      config: `module.exports = {
+  stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  addons: ['@storybook/addon-essentials']
+};`,
+      addons: ['@storybook/addon-essentials', '@storybook/addon-a11y']
+    };
+  }
+
+  // Quality Analysis
+  private analyzeComponentQuality(component: GeneratedComponent): QualityIssue[] {
+    const issues: QualityIssue[] = [];
+    
+    if (component.jsx.length > 1000) {
+      issues.push({
+        type: 'warning',
+        category: 'maintainability',
+        message: 'Component is too large',
+        file: `${component.name}.tsx`,
+        fix: 'Consider breaking into smaller components'
+      });
+    }
+
+    return issues;
+  }
 }

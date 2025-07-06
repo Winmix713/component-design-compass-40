@@ -255,7 +255,7 @@ export class PerformanceOptimizer {
     return hash.toString(36);
   }
 
-  private calculateBundleSize(components: GeneratedComponent[]): number {
+  calculateBundleSize(components: GeneratedComponent[]): number {
     return components.reduce((total, component) => {
       return total + 
         new Blob([component.jsx]).size + 
