@@ -262,3 +262,76 @@ export interface QualityReport {
   performance: number;
   recommendations: string[];
 }
+
+// Enterprise Generation Types
+export interface EnterpriseGenerationConfig {
+  optimization: OptimizationConfig;
+  framework: 'react' | 'vue' | 'angular' | 'svelte';
+  styling: 'tailwind' | 'css-modules' | 'styled-components' | 'emotion' | 'vanilla-extract';
+  typescript: boolean;
+  componentArchitecture: 'atomic' | 'feature-based' | 'domain-driven';
+  cssArchitecture: 'bem' | 'smacss' | 'itcss' | 'cube-css';
+  enableDesignSystem: boolean;
+  enableComponentLibrary: boolean;
+  enableThemeSupport: boolean;
+  enableI18n: boolean;
+  enableTesting: boolean;
+  enableStorybook: boolean;
+  enableDocumentation: boolean;
+  enforceAccessibility: boolean;
+  enforcePerformance: boolean;
+  enforceCodeStandards: boolean;
+  maxComponentsPerBundle: number;
+  enableCodeSplitting: boolean;
+  enableTreeShaking: boolean;
+  enableLazyLoading: boolean;
+}
+
+export interface OptimizationConfig {
+  enableCSSMinification: boolean;
+  enableTreeShaking: boolean;
+  enableComponentDeduplication: boolean;
+  enableAssetOptimization: boolean;
+  enableLazyLoading: boolean;
+  maxBundleSize: number;
+  targetPerformanceScore: number;
+}
+
+export interface DesignSystemOutput {
+  tokens: string;
+  themes: Record<string, string>;
+  utilities: string;
+  components: string;
+}
+
+export interface DocumentationOutput {
+  readme: string;
+  componentDocs: Record<string, string>;
+  designGuidelines: string;
+  usageExamples: string;
+}
+
+export interface TestOutput {
+  unitTests: Record<string, string>;
+  integrationTests: Record<string, string>;
+  e2eTests: Record<string, string>;
+  accessibilityTests: Record<string, string>;
+}
+
+export interface PerformanceReport {
+  bundleSize: number;
+  renderTime: number;
+  memoryUsage: number;
+  optimizationSavings: number;
+  recommendations: string[];
+  generationTime?: number;
+}
+
+export interface QualityIssue {
+  type: 'error' | 'warning' | 'info';
+  category: 'performance' | 'accessibility' | 'maintainability' | 'security';
+  message: string;
+  file: string;
+  line?: number;
+  fix: string;
+}
